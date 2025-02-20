@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
@@ -7,43 +7,17 @@ import { AuthService } from './services/auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'Product Manager';
-  sidebarOpen = true;
-  isDarkMode = false;
-  isUserMenuOpen = false;
+  isLoggedIn = false;
 
   constructor(
-    public authService: AuthService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    // Check if dark mode was previously enabled
-    const darkMode = localStorage.getItem('darkMode') === 'true';
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      this.isDarkMode = true;
-    }
-  }
-
-  toggleTheme() {
-    this.isDarkMode = !this.isDarkMode;
-    if (this.isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('darkMode', 'true');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('darkMode', 'false');
-    }
-  }
-
-  toggleSidebar() {
-    this.sidebarOpen = !this.sidebarOpen;
-  }
-
-  toggleUserMenu() {
-    this.isUserMenuOpen = !this.isUserMenuOpen;
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.authService.currentUser.subscribe(
+      user => this.isLoggedIn = !!user
+    );
   }
 
   logout() {

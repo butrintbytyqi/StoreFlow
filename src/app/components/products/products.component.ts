@@ -8,6 +8,15 @@ interface Product {
   price: number;
   date: string;
   image?: string;
+  description?: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 @Component({
@@ -18,14 +27,14 @@ interface Product {
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
   filteredProducts: Product[] = [];
-  categories: string[] = ['Fruits', 'Electronics', 'Accessories', 'Parts'];
+  categories: Category[] = [];
   viewMode: 'grid' | 'list' = 'grid';
   searchTerm: string = '';
   selectedCategory: string = '';
-  sortBy: string = 'name';
-  showModal: boolean = false;
-  isEdit: boolean = false;
+  showModal = false;
   currentId: number | null = null;
+  isEdit: boolean = false;
+  sortBy: string = 'name';
   productForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -33,50 +42,59 @@ export class ProductsComponent implements OnInit {
       name: ['', Validators.required],
       category: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
-      image: ['']
+      image: [''],
+      description: ['']
     });
   }
 
   ngOnInit(): void {
-    // Load products from localStorage or use default data
+    this.loadProducts();
+    this.loadCategories();
+    this.filterProducts();
+  }
+
+  loadProducts() {
     const savedProducts = localStorage.getItem('products');
     if (savedProducts) {
       this.products = JSON.parse(savedProducts);
     } else {
-      // Default products
       this.products = [
         {
           id: 1,
-          name: 'Apple iPhone 13',
+          name: 'iPhone 13',
           category: 'Electronics',
           price: 999,
           date: new Date().toISOString().split('T')[0],
-          image: 'https://example.com/iphone13.jpg'
+          image: 'https://example.com/iphone13.jpg',
+          description: 'A high-end smartphone'
         },
         // Add more default products as needed
       ];
-      this.saveToLocalStorage();
+      localStorage.setItem('products', JSON.stringify(this.products));
     }
-    this.filterProducts();
+  }
+
+  loadCategories() {
+    const savedCategories = localStorage.getItem('categories');
+    if (savedCategories) {
+      this.categories = JSON.parse(savedCategories);
+    }
   }
 
   filterProducts() {
     let filtered = [...this.products];
 
-    // Apply search filter
     if (this.searchTerm) {
       const search = this.searchTerm.toLowerCase();
       filtered = filtered.filter(product => 
         product.name.toLowerCase().includes(search) ||
+        product.description?.toLowerCase().includes(search) ||
         product.category.toLowerCase().includes(search)
       );
     }
 
-    // Apply category filter
     if (this.selectedCategory) {
-      filtered = filtered.filter(product => 
-        product.category === this.selectedCategory
-      );
+      filtered = filtered.filter(product => product.category === this.selectedCategory);
     }
 
     // Apply sorting
@@ -112,7 +130,8 @@ export class ProductsComponent implements OnInit {
         name: product.name,
         category: product.category,
         price: product.price,
-        image: product.image
+        image: product.image,
+        description: product.description
       });
     }
     this.showModal = true;
@@ -145,7 +164,7 @@ export class ProductsComponent implements OnInit {
         this.products.unshift(newProduct);
       }
       
-      this.saveToLocalStorage();
+      localStorage.setItem('products', JSON.stringify(this.products));
       this.filterProducts();
       this.closeModal();
     }
@@ -154,12 +173,8 @@ export class ProductsComponent implements OnInit {
   deleteData(id: number) {
     if (confirm('Are you sure you want to delete this product?')) {
       this.products = this.products.filter(product => product.id !== id);
-      this.saveToLocalStorage();
+      localStorage.setItem('products', JSON.stringify(this.products));
       this.filterProducts();
     }
-  }
-
-  private saveToLocalStorage() {
-    localStorage.setItem('products', JSON.stringify(this.products));
   }
 }

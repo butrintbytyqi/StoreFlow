@@ -17,14 +17,16 @@
     </div>
     <div>
       <select [(ngModel)]="selectedCategory" (ngModelChange)="filterProducts()"
-        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
         <option value="">All Categories</option>
-        <option *ngFor="let category of categories" [value]="category">{{category}}</option>
+        <option *ngFor="let category of categories" [value]="category.name">
+          {{category.name}}
+        </option>
       </select>
     </div>
     <div>
       <select [(ngModel)]="sortBy" (ngModelChange)="filterProducts()"
-        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
         <option value="name">Sort by Name</option>
         <option value="price">Sort by Price</option>
         <option value="date">Sort by Date</option>
@@ -54,11 +56,11 @@
             <span class="text-lg font-bold text-primary-600 dark:text-primary-400">€{{product.price}}.00</span>
             <div class="flex space-x-2">
               <button (click)="editData(product.id)" 
-                class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-700">
+                class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg">
                 <span class="material-symbols-outlined">edit</span>
               </button>
-              <button (click)="deleteData(product.id)"
-                class="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-700">
+              <button (click)="deleteData(product.id)" 
+                class="p-2 text-red-600 hover:bg-red-100 rounded-lg">
                 <span class="material-symbols-outlined">delete</span>
               </button>
             </div>
@@ -102,10 +104,15 @@
                   class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
               </div>
               
-              <div>
+              <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                <input type="text" formControlName="category"
+                <select formControlName="category"
                   class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
+                  <option value="">Select a category</option>
+                  <option *ngFor="let category of categories" [value]="category.name">
+                    {{category.name}}
+                  </option>
+                </select>
               </div>
 
               <div>

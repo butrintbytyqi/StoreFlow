@@ -1,214 +1,112 @@
-<div class="container mx-auto px-4">
+<div class="container mx-auto px-4 py-6">
   <!-- Header -->
-  <div class="p-4">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Orders</h1>
-    <p class="text-gray-600 dark:text-gray-400">Orders management coming soon...</p>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Orders</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">Manage and track customer orders</p>
   </div>
 
-  <!-- Search and filters -->
-  <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <!-- Filters -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
     <div class="relative">
-      <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-        <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">search</span>
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+        <span class="material-symbols-outlined">search</span>
       </span>
-      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterOrders()"
-        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-primary-500 focus:border-primary-500" 
-        placeholder="Search orders...">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="filterOrders()"
+        placeholder="Search orders..."
+        class="w-full pl-10 pr-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-indigo-500"
+      />
     </div>
     <div>
-      <select [(ngModel)]="statusFilter" (ngModelChange)="filterOrders()"
-        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-        <option value="all">All Statuses</option>
-        <option value="pending">Pending</option>
-        <option value="processing">Processing</option>
-        <option value="completed">Completed</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-    </div>
-    <div>
-      <select [(ngModel)]="sortBy" (ngModelChange)="filterOrders()"
-        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-        <option value="date">Sort by Date</option>
-        <option value="amount">Sort by Amount</option>
-        <option value="status">Sort by Status</option>
+      <select
+        [(ngModel)]="statusFilter"
+        (ngModelChange)="filterOrders()"
+        class="w-full px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-indigo-500"
+      >
+        <option value="">All Statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="Processing">Processing</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
       </select>
     </div>
   </div>
 
-  <!-- Orders list -->
-  <div class="grid grid-cols-1 gap-6">
-    <div *ngFor="let order of filteredOrders" 
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            Order #{{order.id}} - {{order.customerName}}
-          </h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Created on {{order.createdAt | date:'medium'}}
-          </p>
-        </div>
-        <div class="flex items-center space-x-4 mt-4 md:mt-0">
-          <span [class]="'px-3 py-1 rounded-full text-sm font-medium ' + getStatusClass(order.status)">
-            {{order.status | titlecase}}
-          </span>
-          <div class="flex space-x-2">
-            <button (click)="editOrder(order.id)" 
-              class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-700">
-              <span class="material-symbols-outlined">edit</span>
-            </button>
-            <button (click)="deleteOrder(order.id)"
-              class="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-700">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Products list -->
-      <div class="mt-4">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead>
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Quantity</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-            <tr *ngFor="let product of order.products">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{product.name}}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">{{product.quantity}}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">${{product.price}}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">${{product.quantity * product.price}}</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="3" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-right">Total Amount:</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white text-right">${{order.totalAmount}}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
-      <!-- Notes -->
-      <div *ngIf="order.notes" class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-        <strong>Notes:</strong> {{order.notes}}
-      </div>
-
-      <!-- Status actions -->
-      <div class="mt-6 flex justify-end space-x-3">
-        <button *ngIf="order.status === 'pending'"
-          (click)="updateOrderStatus(order.id, 'processing')"
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg">
-          Start Processing
-        </button>
-        <button *ngIf="order.status === 'processing'"
-          (click)="updateOrderStatus(order.id, 'completed')"
-          class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg">
-          Mark as Completed
-        </button>
-        <button *ngIf="order.status !== 'cancelled' && order.status !== 'completed'"
-          (click)="updateOrderStatus(order.id, 'cancelled')"
-          class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg">
-          Cancel Order
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Empty state -->
-  <div *ngIf="filteredOrders.length === 0" class="text-center py-12">
-    <span class="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-500 mb-4">receipt_long</span>
-    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">No orders found</h3>
-    <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or create a new order</p>
-  </div>
-
-  <!-- Add/Edit Modal -->
-  <div *ngIf="showModal" class="fixed inset-0 z-50 overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen px-4">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-      
-      <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
-        <!-- Modal header -->
-        <div class="flex items-center justify-between p-4 border-b dark:border-gray-700">
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            {{ isEdit ? 'Edit Order' : 'New Order' }}
-          </h3>
-          <button (click)="closeModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="p-6">
-          <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer Name</label>
-                <input type="text" formControlName="customerName"
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
+  <!-- Orders List -->
+  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Order Details
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Customer
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Total
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr *ngFor="let order of filteredOrders">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900 dark:text-white">
+                {{order.productName}}
               </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Products</label>
-                <div class="space-y-2">
-                  <div *ngFor="let product of orderForm.get('products')?.value; let i = index" 
-                    class="flex items-center space-x-2">
-                    <select [(ngModel)]="orderForm.get('products')?.value[i].id" [ngModelOptions]="{standalone: true}"
-                      class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white">
-                      <option *ngFor="let p of availableProducts" [value]="p.id">{{p.name}} - ${{p.price}}</option>
-                    </select>
-                    <input type="number" [(ngModel)]="orderForm.get('products')?.value[i].quantity" [ngModelOptions]="{standalone: true}"
-                      class="w-24 px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
-                      min="1">
-                    <button type="button" (click)="orderForm.get('products')?.value.splice(i, 1)"
-                      class="p-2 text-red-600 hover:bg-red-100 rounded-lg">
-                      <span class="material-symbols-outlined">remove</span>
-                    </button>
-                  </div>
-                  <button type="button" (click)="orderForm.get('products')?.value.push({id: null, quantity: 1})"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700">
-                    <span class="material-symbols-outlined mr-2">add</span>
-                    Add Product
-                  </button>
-                </div>
+              <div class="text-sm text-gray-500">
+                Quantity: {{order.quantity}}
               </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                <select formControlName="status"
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white">
-                  <option value="pending">Pending</option>
-                  <option value="processing">Processing</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
+              <div class="text-sm text-gray-500">
+                Order Date: {{order.orderDate | date:'medium'}}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-white">{{order.customerName}}</div>
+              <div class="text-sm text-gray-500">{{order.customerEmail}}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="relative">
+                <select
+                  [ngModel]="order.status"
+                  (ngModelChange)="updateOrderStatus(order.id, $event)"
+                  [class]="getStatusColor(order.status) + ' px-2 py-1 text-xs font-medium rounded-full'"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                <textarea formControlName="notes" rows="3"
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"></textarea>
-              </div>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="mt-6 flex justify-end space-x-3">
-              <button type="button" (click)="closeModal()"
-                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
-                Cancel
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              €{{order.totalPrice}}.00
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button (click)="deleteOrder(order.id)" 
+                class="text-red-600 hover:text-red-900">
+                <span class="material-symbols-outlined">delete</span>
               </button>
-              <button type="submit"
-                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800">
-                {{ isEdit ? 'Update' : 'Create' }} Order
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredOrders.length === 0" class="text-center py-12">
+    <span class="material-symbols-outlined text-4xl text-gray-400">receipt_long</span>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No orders found</h3>
+    <p class="mt-1 text-sm text-gray-500">No orders match your current filters</p>
   </div>
 </div>
