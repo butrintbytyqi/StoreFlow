@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-interface Order {
-  id: number;
-  productId: number;
-  productName: string;
-  quantity: number;
-  totalPrice: number;
-  status: 'Pending' | 'Processing' | 'Completed' | 'Cancelled';
-  customerName: string;
-  customerEmail: string;
-  orderDate: string;
-}
+import { NotificationService } from '../../services/notification.service';
+import { Order } from '../../interfaces/order';
 
 @Component({
   selector: 'app-orders',
@@ -23,7 +13,7 @@ export class OrdersComponent implements OnInit {
   searchTerm: string = '';
   statusFilter: string = '';
 
-  constructor() { }
+  constructor(private notificationService: NotificationService) { }
 
   ngOnInit(): void {
     this.loadOrders();
@@ -43,7 +33,7 @@ export class OrdersComponent implements OnInit {
     if (this.searchTerm) {
       const search = this.searchTerm.toLowerCase();
       filtered = filtered.filter(order => 
-        order.productName.toLowerCase().includes(search) ||
+        order.items.some(item => item.productName.toLowerCase().includes(search)) ||
         order.customerName.toLowerCase().includes(search) ||
         order.customerEmail.toLowerCase().includes(search)
       );
@@ -62,6 +52,12 @@ export class OrdersComponent implements OnInit {
       this.orders[index].status = newStatus;
       localStorage.setItem('orders', JSON.stringify(this.orders));
       this.filterOrders();
+      
+      // Show notification for status update
+      this.notificationService.success(
+        `Order #${orderId} status updated to ${newStatus}`,
+        'Status Updated'
+      );
     }
   }
 
@@ -80,11 +76,25 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  deleteOrder(orderId: number) {
-    if (confirm('Are you sure you want to delete this order?')) {
+  async deleteOrder(orderId: number) {
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const confirmed = await this.notificationService.confirm(
+      `Are you sure you want to delete order #${orderId}?`,
+      'Delete Order'
+    );
+
+    if (confirmed) {
       this.orders = this.orders.filter(order => order.id !== orderId);
       localStorage.setItem('orders', JSON.stringify(this.orders));
       this.filterOrders();
+
+      // Show success notification
+      this.notificationService.success(
+        `Order #${orderId} has been deleted successfully`,
+        'Order Deleted'
+      );
     }
   }
 }

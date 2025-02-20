@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -7,37 +10,49 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  email = '';
-  pass = '';
-  data = [];
-  loginData = false;
-  constructor(private router: Router){}
+  loginForm: FormGroup;
+  isLoading = false;
+  error: string | null = null;
+
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private notificationService: NotificationService
+  ) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
   
-  async login() {
-    this.email = (document.getElementById('email') as HTMLInputElement).value;
-    this.pass = (document.getElementById('password') as HTMLInputElement).value;
-
-    try {
-      const response = await fetch('http://localhost:3000/users');
-      const data = await response.json();
-      this.data = data;
-
-      for (let key in this.data) {
-        const user: any = this.data[key];
-        if (user.email === this.email && user.password === this.pass) {
-          this.loginData = true;
-          this.router.navigate(['/home'])
-          break;
+  login() {
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.error = null;
+      
+      const { email, password } = this.loginForm.value;
+      console.log('Login attempt with:', { email, password });
+      
+      this.authService.login(email, password).subscribe({
+        next: (user) => {
+          console.log('Login successful:', user);
+          this.isLoading = false;
+          this.notificationService.success('Login successful! Welcome back.');
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          console.error('Login error:', error);
+          this.isLoading = false;
+          const errorMessage = error.message || 'Invalid email or password';
+          this.error = errorMessage;
+          this.notificationService.error(errorMessage);
         }
-      }
-
-      if (this.loginData) {
-        window.alert('Jeni kyqur me sukses!!!');
-      } else {
-        window.alert('error');
-      }
-    } catch (error) {
-      console.error('An error occurred while logging in:', error);
+      });
+    } else {
+      const errorMessage = 'Please fill in all required fields correctly';
+      this.error = errorMessage;
+      this.notificationService.error(errorMessage);
     }
   }
 }

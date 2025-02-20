@@ -14,11 +14,69 @@ export interface Category {
 })
 export class CategoryService {
   private categories: BehaviorSubject<Category[]>;
+  private defaultCategories: Category[] = [
+    {
+      id: 1,
+      name: 'Electronics',
+      description: 'Electronic devices and accessories',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 2,
+      name: 'Clothing',
+      description: 'Fashion and apparel',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 3,
+      name: 'Books',
+      description: 'Books and publications',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 4,
+      name: 'Home & Garden',
+      description: 'Home decor and gardening',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 5,
+      name: 'Sports',
+      description: 'Sports equipment and accessories',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 6,
+      name: 'Toys',
+      description: 'Toys and games',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 7,
+      name: 'Beauty',
+      description: 'Beauty and personal care',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: 8,
+      name: 'Food',
+      description: 'Food and beverages',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ];
 
   constructor() {
     const savedCategories = localStorage.getItem('categories');
     this.categories = new BehaviorSubject<Category[]>(
-      savedCategories ? JSON.parse(savedCategories) : []
+      savedCategories ? JSON.parse(savedCategories) : this.defaultCategories
     );
   }
 

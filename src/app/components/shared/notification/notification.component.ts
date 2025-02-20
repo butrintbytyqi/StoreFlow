@@ -1,88 +1,88 @@
-import { Component, OnInit } from '@angular/core';
-import { NotificationService, Notification } from '../../../services/notification.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-notification',
-  templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.css']
+  template: `
+    <div *ngIf="message" class="notification" [ngClass]="type">
+      <div class="notification-content">
+        {{ message }}
+      </div>
+    </div>
+  `,
+  styles: [`
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 30px;
+      border-radius: 4px;
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-content {
+      display: flex;
+      align-items: center;
+      color: white;
+      font-weight: 500;
+    }
+
+    .success {
+      background-color: #4CAF50;
+    }
+
+    .error {
+      background-color: #f44336;
+    }
+
+    .info {
+      background-color: #2196F3;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `]
 })
-export class NotificationComponent implements OnInit {
-  notifications: Notification[] = [];
+export class NotificationComponent implements OnInit, OnDestroy {
+  message: string = '';
+  type: 'success' | 'error' | 'info' = 'info';
+  private subscription?: Subscription;
+  private timeout?: any;
 
   constructor(private notificationService: NotificationService) {}
 
   ngOnInit() {
-    this.notificationService.getNotifications().subscribe(
-      notifications => this.notifications = notifications
-    );
+    this.subscription = this.notificationService.notifications$.subscribe(notification => {
+      this.message = notification.message;
+      this.type = notification.type;
+
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
+
+      this.timeout = setTimeout(() => {
+        this.message = '';
+      }, notification.duration || 3000);
+    });
   }
 
-  getIcon(type: string): string {
-    switch (type) {
-      case 'success':
-        return 'check_circle';
-      case 'error':
-        return 'error';
-      case 'warning':
-        return 'warning';
-      default:
-        return 'info';
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
-  }
-
-  getBgColor(type: string): string {
-    switch (type) {
-      case 'success':
-        return 'bg-green-50 dark:bg-green-900';
-      case 'error':
-        return 'bg-red-50 dark:bg-red-900';
-      case 'warning':
-        return 'bg-yellow-50 dark:bg-yellow-900';
-      default:
-        return 'bg-blue-50 dark:bg-blue-900';
+    if (this.timeout) {
+      clearTimeout(this.timeout);
     }
-  }
-
-  getTextColor(type: string): string {
-    switch (type) {
-      case 'success':
-        return 'text-green-800 dark:text-green-200';
-      case 'error':
-        return 'text-red-800 dark:text-red-200';
-      case 'warning':
-        return 'text-yellow-800 dark:text-yellow-200';
-      default:
-        return 'text-blue-800 dark:text-blue-200';
-    }
-  }
-
-  getBorderColor(type: string): string {
-    switch (type) {
-      case 'success':
-        return 'border-green-400';
-      case 'error':
-        return 'border-red-400';
-      case 'warning':
-        return 'border-yellow-400';
-      default:
-        return 'border-blue-400';
-    }
-  }
-
-  getIconColor(type: string): string {
-    switch (type) {
-      case 'success':
-        return 'text-green-400';
-      case 'error':
-        return 'text-red-400';
-      case 'warning':
-        return 'text-yellow-400';
-      default:
-        return 'text-blue-400';
-    }
-  }
-
-  remove(id: number) {
-    this.notificationService.remove(id);
   }
 }

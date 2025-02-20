@@ -9,6 +9,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: string;
+  password?: string;
 }
 
 @Injectable({
@@ -30,6 +31,20 @@ export class AuthService {
     if (storedUsers) {
       this.users = JSON.parse(storedUsers);
       this.nextId = Math.max(...this.users.map(u => u.id)) + 1;
+      console.log('Loaded existing users:', this.users);
+    } else {
+      // Create default admin user if no users exist
+      this.users = [{
+        id: 1,
+        username: 'admin',
+        email: 'admin@example.com',
+        firstName: 'Admin',
+        lastName: 'User',
+        role: 'admin',
+        password: 'admin123'
+      }];
+      localStorage.setItem('users', JSON.stringify(this.users));
+      console.log('Created default admin user:', this.users[0]);
     }
   }
 
@@ -38,22 +53,35 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    const user = this.users.find(u => u.email === email);
+    console.log('Login attempt:', { email, password });
+    console.log('Available users:', this.users);
+    
+    const user = this.users.find(u => {
+      console.log('Comparing with user:', { 
+        userEmail: u.email, 
+        userPassword: u.password,
+        matches: u.email === email && u.password === password 
+      });
+      return u.email === email && u.password === password;
+    });
     
     if (!user) {
-      return throwError(() => new Error('User not found'));
+      console.log('Login failed: user not found or password mismatch');
+      return throwError(() => new Error('Invalid email or password'));
     }
 
-    // In a real app, we would verify the password here
-    const response = { ...user };
-    localStorage.setItem('currentUser', JSON.stringify(response));
-    this.currentUserSubject.next(response);
-    return of(response).pipe(delay(1000)); // Simulate API delay
+    console.log('Login successful:', user);
+    const { password: _, ...secureUser } = user;
+    localStorage.setItem('currentUser', JSON.stringify(secureUser));
+    this.currentUserSubject.next(secureUser);
+    return of(secureUser).pipe(delay(1000));
   }
 
-  register(userData: Partial<User>): Observable<User> {
-    // Check if email already exists
+  register(userData: Partial<User> & { password: string }): Observable<User> {
+    console.log('Registration attempt:', userData);
+    
     if (this.users.some(u => u.email === userData.email)) {
+      console.log('Registration failed: email exists');
       return throwError(() => ({ status: 409, message: 'Email already exists' }));
     }
 
@@ -63,17 +91,22 @@ export class AuthService {
       email: userData.email!,
       firstName: userData.firstName!,
       lastName: userData.lastName!,
-      role: 'user'
+      role: 'user',
+      password: userData.password
     };
 
     this.users.push(newUser);
     localStorage.setItem('users', JSON.stringify(this.users));
+    console.log('Registration successful:', newUser);
+    console.log('Updated users list:', this.users);
 
-    return of(newUser).pipe(delay(1000)); // Simulate API delay
+    const { password: _, ...secureUser } = newUser;
+    return of(secureUser).pipe(delay(1000));
   }
 
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+    console.log('User logged out');
   }
 }

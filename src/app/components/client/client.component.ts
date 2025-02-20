@@ -1,26 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NotificationService } from '../../services/notification.service';
 import { CategoryService } from '../../services/category.service';
+import { Order, OrderItem } from '../../interfaces/order';
 
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image?: string;
-}
-
-interface Order {
-  id: number;
-  productId: number;
-  productName: string;
+interface CartItem {
+  product: any;
   quantity: number;
-  totalPrice: number;
-  status: 'Pending' | 'Processing' | 'Completed' | 'Cancelled';
-  customerName: string;
-  customerEmail: string;
-  orderDate: string;
 }
 
 @Component({
@@ -29,116 +15,131 @@ interface Order {
   styleUrls: ['./client.component.css']
 })
 export class ClientComponent implements OnInit {
-  products: Product[] = [];
-  filteredProducts: Product[] = [];
+  products: any[] = [];
+  filteredProducts: any[] = [];
   categories: string[] = [];
-  searchTerm: string = '';
-  selectedCategory: string = '';
+  selectedCategory: string | null = null;
+  searchQuery: string = '';
+  cart: CartItem[] = [];
   showOrderModal: boolean = false;
-  selectedProduct: Product | null = null;
   orderForm: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
+    private notificationService: NotificationService,
     private categoryService: CategoryService
   ) {
-    // Initialize with default products directly
-    this.products = [
-      {
-        id: 1,
-        name: 'iPhone 13',
-        category: 'Electronics',
-        price: 999,
-        description: 'A high-end smartphone',
-        image: 'https://example.com/iphone13.jpg'
-      },
-      {
-        id: 2,
-        name: 'MacBook Pro',
-        category: 'Electronics',
-        price: 1299,
-        description: 'Powerful laptop for professionals',
-        image: 'https://example.com/macbook.jpg'
-      },
-      {
-        id: 3,
-        name: 'AirPods Pro',
-        category: 'Electronics',
-        price: 249,
-        description: 'Premium wireless earbuds',
-        image: 'https://example.com/airpods.jpg'
-      }
-    ];
-    
-    this.filteredProducts = [...this.products];
-    
-    this.orderForm = this.fb.group({
-      quantity: [1, [Validators.required, Validators.min(1)]],
-      customerName: ['', [Validators.required, Validators.minLength(3)]],
-      customerEmail: ['', [Validators.required, Validators.email]]
+    this.orderForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      address: ['', Validators.required],
+      phone: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    // Load categories from service
-    this.categoryService.getCategoryNames().subscribe(categories => {
-      this.categories = categories;
+    this.loadProducts();
+    this.loadCategories();
+  }
+
+  loadProducts() {
+    const savedProducts = localStorage.getItem('products');
+    if (savedProducts) {
+      this.products = JSON.parse(savedProducts);
+      this.filteredProducts = [...this.products];
+    }
+  }
+
+  loadCategories() {
+    this.categoryService.getCategories().subscribe(categories => {
+      this.categories = categories.map(cat => cat.name);
     });
   }
 
-  filterProducts(): void {
-    this.filteredProducts = this.products.filter(product => {
-      const matchesCategory = !this.selectedCategory || product.category === this.selectedCategory;
-      const matchesSearch = !this.searchTerm || 
-        product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(this.searchTerm.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
+  get totalAmount(): number {
+    return this.cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
   }
 
-  openOrderModal(product: Product): void {
-    this.selectedProduct = product;
+  addToCart(product: any) {
+    const existingItem = this.cart.find(item => item.product.id === product.id);
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      this.cart.push({ product, quantity: 1 });
+    }
+    this.notificationService.success('Product added to cart', 'Success');
+  }
+
+  updateQuantity(index: number, change: number) {
+    const item = this.cart[index];
+    item.quantity += change;
+    if (item.quantity <= 0) {
+      this.cart.splice(index, 1);
+      this.notificationService.info('Item removed from cart', 'Cart Updated');
+    } else {
+      this.notificationService.info('Quantity updated', 'Cart Updated');
+    }
+  }
+
+  removeFromCart(index: number) {
+    this.cart.splice(index, 1);
+    this.notificationService.info('Item removed from cart', 'Cart Updated');
+  }
+
+  openOrderModal() {
+    if (this.cart.length === 0) {
+      this.notificationService.error('Your cart is empty', 'Error');
+      return;
+    }
     this.showOrderModal = true;
-    this.orderForm.reset({ quantity: 1 });
   }
 
-  closeOrderModal(): void {
+  closeOrderModal() {
     this.showOrderModal = false;
-    this.selectedProduct = null;
     this.orderForm.reset();
   }
 
-  getTotalPrice(): number {
-    if (!this.selectedProduct || !this.orderForm.get('quantity')?.value) return 0;
-    return this.selectedProduct.price * this.orderForm.get('quantity')?.value;
-  }
-
-  placeOrder() {
-    if (this.orderForm.valid && this.selectedProduct) {
-      const formValue = this.orderForm.value;
-      
-      // Create new order
-      const order: Order = {
-        id: Date.now(),
-        productId: this.selectedProduct.id,
-        productName: this.selectedProduct.name,
-        quantity: formValue.quantity,
-        totalPrice: this.getTotalPrice(),
-        status: 'Pending',
-        customerName: formValue.customerName,
-        customerEmail: formValue.customerEmail,
-        orderDate: new Date().toISOString()
-      };
-
-      // Save to localStorage
-      const savedOrders = localStorage.getItem('orders');
-      const orders = savedOrders ? JSON.parse(savedOrders) : [];
-      orders.push(order);
-      localStorage.setItem('orders', JSON.stringify(orders));
-
-      // Close modal and show success message
-      this.closeOrderModal();
-      alert('Order placed successfully!');
+  async placeOrder() {
+    if (this.orderForm.invalid) {
+      this.notificationService.error('Please fill in all required fields', 'Error');
+      return;
     }
+
+    // Create order items
+    const items: OrderItem[] = this.cart.map(item => ({
+      productId: item.product.id,
+      productName: item.product.name,
+      quantity: item.quantity,
+      price: item.product.price
+    }));
+
+    // Create the order
+    const order: Order = {
+      id: Date.now(),
+      items: items,
+      totalAmount: this.totalAmount,
+      status: 'Pending',
+      customerName: this.orderForm.value.name,
+      customerEmail: this.orderForm.value.email,
+      customerAddress: this.orderForm.value.address,
+      customerPhone: this.orderForm.value.phone,
+      orderDate: new Date()
+    };
+
+    // Get existing orders or initialize empty array
+    const existingOrders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]');
+    
+    // Add new order
+    existingOrders.push(order);
+    
+    // Save back to localStorage
+    localStorage.setItem('orders', JSON.stringify(existingOrders));
+
+    // Clear cart and close modal
+    this.cart = [];
+    this.closeOrderModal();
+
+    // Show success notification
+    await this.notificationService.orderSuccess(order);
   }
 }
