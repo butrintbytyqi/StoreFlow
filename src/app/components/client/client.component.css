@@ -1,1 +1,51 @@
 /* Add any custom styles here */
+
+.cart-expanded {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* Scrollbar Styles */
+.cart-expanded::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cart-expanded::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.cart-expanded::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.cart-expanded::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  .cart-expanded::-webkit-scrollbar-track {
+    background: #2d3748;
+  }
+
+  .cart-expanded::-webkit-scrollbar-thumb {
+    background: #4a5568;
+  }
+
+  .cart-expanded::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+  }
+}
+
+/* Animation for cart expansion */
+.cart-expanded {
+  transform-origin: top right;
+  transition: transform 0.3s ease-in-out;
+}
+
+.cart-expanded.collapsed {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
