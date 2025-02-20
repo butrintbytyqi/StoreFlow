@@ -1,0 +1,114 @@
+<div class="container mx-auto px-4">
+  <!-- Header -->
+  <div class="p-4">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Categories</h1>
+    <p class="text-gray-600 dark:text-gray-400">Categories management coming soon...</p>
+  </div>
+
+  <!-- Search and filter -->
+  <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="relative">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+        <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">search</span>
+      </span>
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterCategories()"
+        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500" 
+        placeholder="Search categories...">
+    </div>
+    <div>
+      <select [(ngModel)]="sortBy" (ngModelChange)="filterCategories()"
+        class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+        <option value="name">Sort by Name</option>
+        <option value="productCount">Sort by Product Count</option>
+        <option value="date">Sort by Date</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Categories list -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let category of filteredCategories" 
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{category.name}}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{category.description}}</p>
+        </div>
+        <div class="flex space-x-2">
+          <button (click)="editCategory(category.id)" 
+            class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-700">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button (click)="deleteCategory(category.id)"
+            class="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 rounded-lg dark:hover:bg-gray-700">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center">
+        <span class="material-symbols-outlined text-gray-500 dark:text-gray-400 mr-2">inventory_2</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{category.productCount}} products</span>
+      </div>
+      <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        Created on {{category.createdAt | date:'medium'}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="filteredCategories.length === 0" class="text-center py-12">
+    <span class="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-500 mb-4">category</span>
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">No categories found</h3>
+    <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or add a new category</p>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div *ngIf="showModal" class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+      
+      <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 border-b dark:border-gray-700">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            {{ isEdit ? 'Edit Category' : 'Add New Category' }}
+          </h3>
+          <button (click)="closeModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="p-6">
+          <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category Name</label>
+                <input type="text" formControlName="name"
+                  class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                <textarea formControlName="description" rows="3"
+                  class="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"></textarea>
+              </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="mt-6 flex justify-end space-x-3">
+              <button type="button" (click)="closeModal()"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                Cancel
+              </button>
+              <button type="submit"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800">
+                {{ isEdit ? 'Update' : 'Add' }} Category
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<ng-container *ngIf="shouldShowHeader">
+    <nav class="navbar">
+        <div class="container-fluid d-flex justify-content-around p-0">
+            <div class="left-nav col d-flex justify-content-center">
+                <button type="button" class="btn">Logo</button>
+            </div>
+            <div class="right-nav col d-flex justify-content-center gap-3">
+                <a [routerLink]="['/home']" [routerLinkActive]="['active']">Home</a>
+                <a [routerLink]="['/products']" [routerLinkActive]="['active']">Products</a>
+                <a [routerLink]="['/login']" [routerLinkActive]="['active']">Log out</a>
+            </div>
+        </div>
+    </nav>
+</ng-container>

@@ -1,0 +1,211 @@
+<div class="p-6">
+  <!-- Welcome Section -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      Welcome back, {{ user?.firstName }}!
+    </h1>
+    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+      Here's what's happening with your store today.
+    </p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <!-- Total Products -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-2xl material-symbols-outlined text-indigo-600 dark:text-indigo-400">
+              inventory_2
+            </span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Total Products
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  {{ stats.totalProducts }}
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Categories -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-2xl material-symbols-outlined text-indigo-600 dark:text-indigo-400">
+              category
+            </span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Categories
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  {{ stats.totalCategories }}
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Orders -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-2xl material-symbols-outlined text-indigo-600 dark:text-indigo-400">
+              shopping_cart
+            </span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Total Orders
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  {{ stats.totalOrders }}
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-2xl material-symbols-outlined text-indigo-600 dark:text-indigo-400">
+              payments
+            </span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Total Revenue
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  ${{ stats.totalRevenue.toFixed(2) }}
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders by Status -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Status Distribution -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Orders by Status</h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                Pending
+              </span>
+            </div>
+            <span class="text-sm text-gray-500">{{ stats.ordersByStatus.pending }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                Processing
+              </span>
+            </div>
+            <span class="text-sm text-gray-500">{{ stats.ordersByStatus.processing }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                Completed
+              </span>
+            </div>
+            <span class="text-sm text-gray-500">{{ stats.ordersByStatus.completed }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="px-2.5 py-0.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                Cancelled
+              </span>
+            </div>
+            <span class="text-sm text-gray-500">{{ stats.ordersByStatus.cancelled }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Revenue -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Monthly Revenue</h3>
+        <div class="space-y-4">
+          <div *ngFor="let item of stats.revenueByMonth" class="flex items-center justify-between">
+            <span class="text-sm text-gray-500">{{ item.month }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">${{ item.revenue.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Orders and Top Products -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Orders -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Orders</h3>
+        <div class="space-y-4">
+          <div *ngFor="let order of stats.recentOrders" class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ order.customerName }}</p>
+              <p class="text-sm text-gray-500">{{ order.date | date:'medium' }}</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span [class]="'px-2.5 py-0.5 rounded-full text-sm font-medium ' + getStatusClass(order.status)">
+                {{ order.status }}
+              </span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">${{ order.totalAmount?.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Top Products</h3>
+        <div class="space-y-4">
+          <div *ngFor="let product of stats.topProducts" class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ product.name }}</p>
+              <p class="text-sm text-gray-500">{{ product.count }} units sold</p>
+            </div>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">${{ product.revenue.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

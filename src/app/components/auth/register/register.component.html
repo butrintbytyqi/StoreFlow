@@ -1,0 +1,120 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+        Create your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+        Or
+        <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+          sign in to your account
+        </a>
+      </p>
+    </div>
+
+    <form class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Username -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Username
+        </label>
+        <div class="mt-1">
+          <input id="username" name="username" type="text" formControlName="username" required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div *ngIf="username?.errors?.['required'] && username?.touched" class="text-red-500 text-sm mt-1">
+          Username is required
+        </div>
+        <div *ngIf="username?.errors?.['minlength']" class="text-red-500 text-sm mt-1">
+          Username must be at least 3 characters
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Email address
+        </label>
+        <div class="mt-1">
+          <input id="email" name="email" type="email" formControlName="email" required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div *ngIf="email?.errors?.['required'] && email?.touched" class="text-red-500 text-sm mt-1">
+          Email is required
+        </div>
+        <div *ngIf="email?.errors?.['email']" class="text-red-500 text-sm mt-1">
+          Please enter a valid email
+        </div>
+      </div>
+
+      <!-- First Name -->
+      <div>
+        <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          First Name
+        </label>
+        <div class="mt-1">
+          <input id="firstName" name="firstName" type="text" formControlName="firstName" required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div *ngIf="firstName?.errors?.['required'] && firstName?.touched" class="text-red-500 text-sm mt-1">
+          First name is required
+        </div>
+      </div>
+
+      <!-- Last Name -->
+      <div>
+        <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Last Name
+        </label>
+        <div class="mt-1">
+          <input id="lastName" name="lastName" type="text" formControlName="lastName" required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div *ngIf="lastName?.errors?.['required'] && lastName?.touched" class="text-red-500 text-sm mt-1">
+          Last name is required
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Password
+        </label>
+        <div class="mt-1">
+          <input id="password" name="password" type="password" formControlName="password" required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div *ngIf="password?.errors?.['required'] && password?.touched" class="text-red-500 text-sm mt-1">
+          Password is required
+        </div>
+        <div *ngIf="password?.errors?.['minlength']" class="text-red-500 text-sm mt-1">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Confirm Password
+        </label>
+        <div class="mt-1">
+          <input id="confirmPassword" name="confirmPassword" type="password" formControlName="confirmPassword" required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div *ngIf="confirmPassword?.errors?.['required'] && confirmPassword?.touched" class="text-red-500 text-sm mt-1">
+          Please confirm your password
+        </div>
+        <div *ngIf="registerForm.errors?.['passwordMismatch']" class="text-red-500 text-sm mt-1">
+          Passwords do not match
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="registerForm.invalid"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed">
+          Create Account
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

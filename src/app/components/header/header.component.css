@@ -1,0 +1,21 @@
+.navbar {
+  background-color: lightgrey;
+}
+
+a {
+  color: gray;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn {
+    background-color: rgb(157, 157, 157);
+    color: white;
+    font-size: 14px;
+    padding: 8px 100px;
+    border-radius: 0;
+}
+
+.active {
+    font-weight: 700;
+}

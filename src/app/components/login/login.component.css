@@ -1,0 +1,32 @@
+.login-sector {
+  background-color: lightgrey;
+  height: 100vh;
+}
+
+#email,
+#password {
+  font-size: small;
+  padding: 5px 20px;
+}
+
+#button {
+  color: gray;
+  padding: 5px 20px;
+  font-size: small;
+}
+
+a,
+p {
+  font-size: x-small;
+  color: gray;
+  text-decoration: none;
+}
+
+p a {
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+p {
+    font-weight: 600;
+}

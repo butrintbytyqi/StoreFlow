@@ -1,0 +1,20 @@
+<div class="fixed top-4 right-4 z-50 space-y-2">
+  <div *ngFor="let notification of notifications"
+       class="flex items-center p-4 mb-4 rounded-lg border"
+       [ngClass]="[getBgColor(notification.type), getBorderColor(notification.type)]"
+       role="alert">
+    <span class="material-symbols-outlined mr-2" [ngClass]="getIconColor(notification.type)">
+      {{ getIcon(notification.type) }}
+    </span>
+    <span class="sr-only">{{ notification.type }}</span>
+    <div [ngClass]="getTextColor(notification.type)">{{ notification.message }}</div>
+    <button type="button"
+            [ngClass]="getTextColor(notification.type)"
+            class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex h-8 w-8"
+            [attr.aria-label]="'Close ' + notification.type + ' notification'"
+            (click)="remove(notification.id)">
+      <span class="sr-only">Close</span>
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+.btn {
+  background-color: rgb(157, 157, 157);
+  color: white;
+  font-size: 14px;
+  padding: 8px 100px;
+  border-radius: 0;
+}
+
+.title h1 {
+  font-size: 20px;
+  color: rgb(103, 100, 100);
+}
+
+.table {
+  border: 1px solid black;
+}
+
+th,
+td {
+  color: grey;
+}
+
+th {
+  border-bottom: 1px solid black;
+}
+
+th:not(:last-child) {
+  border-right: 1px solid black;
+}
+
+.selectOptions {
+  padding: 7px 13px;
+  font-size: 14px;
+}
+
+#nameA,
+#priceA,
+#dateA {
+  padding: 7px 15px;
+  font-size: 14px;
+}
+
+.modal-content {
+  border-radius: 0;
+  padding: 0 20px;
+}
+
+.modal-title {
+  color: grey;
+}
+
+.btn {
+  padding: 8px 88px; 
+}

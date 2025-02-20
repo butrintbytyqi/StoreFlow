@@ -1,0 +1,42 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "iPhone",
+      "category": "Electronics",
+      "price": 1400,
+      "date": "2023-01-02"
+    },
+    {
+      "id": 3,
+      "name": "Butrint Bytyqi",
+      "category": "Electronics",
+      "price": "2134",
+      "date": "2023-06-30"
+    },
+    {
+      "id": 5,
+      "name": "dddddd",
+      "category": "Fruits",
+      "price": "2345",
+      "date": "2023-06-26"
+    },
+    {
+      "id": 7,
+      "name": "ssssss",
+      "category": "Electronics",
+      "price": "2345",
+      "date": "2023-06-02"
+    }
+  ],
+  "users": [
+    {
+      "email": "butrinti022@gmail.com",
+      "password": "buta123"
+    },
+    {
+      "email": "nedimfaiku1@gmail.com",
+      "password": "nedim123"
+    }
+  ]
+}
