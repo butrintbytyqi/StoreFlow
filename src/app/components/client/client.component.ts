@@ -23,7 +23,6 @@ export class ClientComponent implements OnInit {
   cart: CartItem[] = [];
   showOrderModal: boolean = false;
   orderForm: FormGroup;
-  isCartExpanded: boolean = true;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -142,9 +141,5 @@ export class ClientComponent implements OnInit {
 
     // Show success notification
     await this.notificationService.orderSuccess(order);
-  }
-
-  toggleCart() {
-    this.isCartExpanded = !this.isCartExpanded;
   }
 }
